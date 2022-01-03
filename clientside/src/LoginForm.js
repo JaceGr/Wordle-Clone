@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 function LoginForm(props) {
     // user details state variables set here
@@ -7,6 +8,8 @@ function LoginForm(props) {
     const [lname, setLname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate();
 
 
     // send user details to the api endpoint 
@@ -22,15 +25,43 @@ function LoginForm(props) {
                 fname,
                 lname,
                 email,
+                password
             }),
         })
 
         const data = await response.json();
         console.log(data);
+
+        /* If registration successful: Route browser to login page */
+        if(data && data.status === "ok") {
+            navigate(0);
+        }
     }
 
     async function loginUser(e) {
-        e.preventDefault();
+        e.preventDefault(); 
+
+        const response = await fetch('http://localhost:1337/api/login', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                password
+            }),
+        })
+
+        const data = await response.json();
+        console.log(data);
+
+        /* Retrieve JWT here and route to dashboard */
+        if (data && data.user) {
+            localStorage.setItem('token', data.user);
+            console.log(localStorage.getItem('token'));
+        } else {
+            alert('Login Failed');
+        }
     }
 
     if(props.isCreate === true) {
@@ -57,6 +88,13 @@ function LoginForm(props) {
                         placeholder="email"
                         value={email}
                         onChange={(e) => {setEmail(e.target.value)}}   
+                    />
+                    <br/>
+                    <input 
+                        type="password" 
+                        placeholder="password"
+                        value={password}
+                        onChange={(e) => {setPassword(e.target.value)}}
                     />
                     <br/>
                     <input type="submit"/>
