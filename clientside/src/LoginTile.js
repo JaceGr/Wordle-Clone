@@ -11,20 +11,18 @@ function LoginTile(props) {
   const [create, setCreate] = useState(props.create);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <LoginForm isCreate={create}/>
-        <div>
-          <button onClick={() => setCreate(true)}>
-            Create Account
-          </button>
-          <button onClick={() => setCreate(false)}>
-            Sign In
-          </button>
-        </div>
-      </header>
-      
+    <div className="App-body">
+      <LoginForm isCreate={create}/>
+      <div>
+        <button onClick={() => setCreate(true)}>
+          Create Account
+        </button>
+        <button onClick={() => setCreate(false)}>
+          Sign In
+        </button>
+      </div>
     </div>
+
   );
 }
 

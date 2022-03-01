@@ -59,6 +59,8 @@ function LoginForm(props) {
         if (data && data.user) {
             localStorage.setItem('token', data.user);
             console.log(localStorage.getItem('token'));
+            navigate('/');
+            navigate(0);
         } else {
             alert('Login Failed');
         }

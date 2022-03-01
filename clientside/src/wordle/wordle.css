@@ -1,0 +1,9 @@
+.word-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.letter {
+    margin:10px;
+}
+

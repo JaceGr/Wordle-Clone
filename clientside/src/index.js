@@ -2,16 +2,31 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import LoginTile from './LoginTile';
+import Dashboard from './Dashboard';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import TopBar from './TopBar';
+import GameGrid from './wordle/GameGrid';
 
-ReactDOM.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" exact element={ <LoginTile create={false}/>  } />
-      <Route path="/login" exact element={ <LoginTile create={false}/>  } />
-    </Routes>
-  </BrowserRouter>,
-  document.getElementById('root')
-);
+const isLoggedIn = () => {
+  let token = localStorage.getItem('token')
+  console.log('running', token)
+  if(token) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+  ReactDOM.render(
+    <BrowserRouter>
+      <TopBar/>
+      <Routes>
+        <Route path="/" exact element={ !isLoggedIn() ? <LoginTile create={false}/> : <Dashboard />  } />
+        <Route path="/login" exact element={ <LoginTile create={false}/>  } />
+        <Route path="/wordle" exact element={ <GameGrid/>  } />
+      </Routes>
+    </BrowserRouter>,
+    document.getElementById('root')
+  );
 
 
