@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import LoginTile from './LoginTile';
+import LoginTile from './login/LoginTile';
 import Dashboard from './Dashboard';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import TopBar from './TopBar';
+import TopBar from './navbar/NavBar';
 import GameGrid from './wordle/GameGrid';
 
 const isLoggedIn = () => {
