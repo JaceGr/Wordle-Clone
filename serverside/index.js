@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/user.model');
 const bcryptjs = require('bcryptjs')
 
+var seed = require('./seed.js');
 
 const app = express();
 app.use(cors());
@@ -12,14 +13,9 @@ app.use(express.json());
 
 mongoose.connect('mongodb://localhost:27017/FishTrack')
 
-app.get('/hello', (req, res) => {
-    res.send("hello express app")
-})
-
 app.post('/api/register', async (req, res) => {
     console.log(req.body)
-    try {
-            
+    try { 
         const hashPw = await bcryptjs.hash(req.body.password, 10);
 
         await User.create({
@@ -59,7 +55,7 @@ app.post('/api/login', async (req, res) => {
             lname: req.body.lname,
             email: req.body.email
         },
-        'supersecret'
+            'supersecret'
         )
         res.json({status: 'ok', name: user.fname, user: token})
     } else {
@@ -67,6 +63,8 @@ app.post('/api/login', async (req, res) => {
     }
     
 })
+// Including seed.js file into server
+app.use('/seed', seed);
 
 app.listen(1337, () => {
     console.log("server started on port 1337")

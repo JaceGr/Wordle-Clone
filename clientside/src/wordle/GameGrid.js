@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react/cjs/react.production.min';
+import React, { useState, useEffect } from 'react';
 import WordTile from './WordTile';
 
 function GameGrid(props) {
     const [input, setInput] = useState('');
     const [guessNum, setGuessNum] = useState(0);
     const [gameWon, setGameWon] = useState(false);
-    const ansWord = "TOURS";
+    const [ansWord, setAnsWord] = useState("     ");
 
     const [input1, setInput1] = useState('');
     const [input2, setInput2] = useState('');
@@ -14,6 +13,30 @@ function GameGrid(props) {
     const [input4, setInput4] = useState('');
     const [input5, setInput5] = useState('');
     const [input6, setInput6] = useState('');
+    
+    // Fetch word from serverside
+    useEffect(() => {
+        async function loadWord() {
+            const response = await fetch('http://localhost:1337/seed/todays-word', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            const status = await response.status;
+            if (status === 200) {
+                const data = await response.json();
+                setAnsWord(data.answer);
+            } else {
+                // TODO: Set the page to a "Cant play page instead of a hard coded word."
+                console.log("Todays word cant be fetched. Setting to another hardcoded word");
+                setAnsWord("TRUCK")
+            }
+        }
+        
+        loadWord().catch(console.error);
+    }, []);
+    
 
     // useEffect to notify serverside of the game being won or over, each time that the gameNum is updated check. 
     // if gameNum == 6 then send that the game is over. 
@@ -99,7 +122,6 @@ function GameGrid(props) {
                 submit={guessNum > 0 } 
                 inWord={guessNum === 0 ? input : input1}
                 ansWord={ansWord} />
-
             <WordTile 
                 submit={guessNum > 1} 
                 inWord={guessNum === 1 ? input : input2}
