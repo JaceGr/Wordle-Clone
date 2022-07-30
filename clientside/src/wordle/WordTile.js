@@ -11,7 +11,7 @@ function WordTile(props) {
     }, [props.submit, props.inWord])
 
     useEffect(() => {
-        if(inputWord === props.ansWord) {
+        if(props.submit && inputWord === props.ansWord) {
             alert("CONGRATS! YOU WON")
         }
 

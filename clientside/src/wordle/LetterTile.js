@@ -19,7 +19,7 @@ function LetterTile(props) {
     });
 
     useEffect( () => {
-        if(props.input === props.answer && props.submit) {
+        if( props.submit && props.input === props.answer) {
             setLetCorrect(2);
             setStyle({
                 'backgroundColor':'green',
@@ -29,7 +29,7 @@ function LetterTile(props) {
                 'verticalAlign':'middle',
                 'lineHeight':'80px',
             })
-        } else if (props.ansWord.includes(props.input) && props.submit){
+        } else if (props.submit && props.ansWord.includes(props.input)){
             setLetCorrect(1);
             setStyle({
                 'backgroundColor':'orange',
@@ -39,7 +39,7 @@ function LetterTile(props) {
                 'verticalAlign':'middle',
                 'lineHeight':'80px',
             })
-        } else if (props.input !== props.answer && props.submit){
+        } else if (props.submit && props.input !== props.answer){
             setLetCorrect(1);
             setStyle({
                 'backgroundColor':'black',

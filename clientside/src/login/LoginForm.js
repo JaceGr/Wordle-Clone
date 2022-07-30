@@ -29,6 +29,7 @@ function LoginForm(props) {
             }),
         })
 
+        // check why i am awaiting twice here.
         const data = await response.json();
         console.log(data);
 
