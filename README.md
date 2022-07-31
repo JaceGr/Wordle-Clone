@@ -8,6 +8,10 @@ This project is a basic clone of the popular game Wordle. The word list used is 
 * Significant styling Improvements are coming as this was overlooked heavily at the beginning of development in favour of getting the game working.
 * Securing the pages and endpoints to logged in users is another future feature that will require users to create an account and log in before playing. I may look at Oauth for this.
 * Adding admin users to change daily words and access user accounts is another potential future improvement.
+* Improving game functionality (this isn't a priority as I am more interested in exploring other aspects of the site):
+  * Adding a keyboard to the web page to show used and unused letters.
+  * Adding a new screen once a player has won / lost the game.
+  * Only allowing words in the official word list to be submitted for an attempt.
 
 ## Tech Stack:
 ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) 
