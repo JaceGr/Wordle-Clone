@@ -17,12 +17,22 @@ function GameGrid(props) {
     // Fetch word from serverside
     useEffect(() => {
         async function loadWord() {
-            const response = await fetch('http://localhost:1337/seed/todays-word', {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
+            let response;
+            if(props.day == null) {
+                response = await fetch('http://localhost:1337/seed/todays-word', {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+            } else {
+                response = await fetch(`http://localhost:1337/seed/word/${props.day}`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+            }
             const status = await response.status;
             if (status === 200) {
                 const data = await response.json();
