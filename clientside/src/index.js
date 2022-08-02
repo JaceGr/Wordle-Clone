@@ -17,15 +17,6 @@ const isLoggedIn = () => {
   }
 }
 
-/**
- * 
- * @returns The GameGrid component with the path parameter {day} set as a prop
- */
-const GameGridDay = () => {
-    let { day } = useParams();
-    return <GameGrid day={day}/>;
-}
-
   ReactDOM.render(
     <BrowserRouter>
       <TopBar/>
@@ -33,7 +24,7 @@ const GameGridDay = () => {
         <Route path="/" exact element={ !isLoggedIn() ? <LoginTile create={false}/> : <Dashboard /> } />
         <Route path="/login" exact element={ <LoginTile create={false}/> } />
         <Route path="/wordle" exact element={ <GameGrid/>  } />
-        <Route path="/wordle/:day" exact element={<GameGridDay/>} />
+        <Route path="/wordle/:day" exact element={<GameGrid/>} />
       </Routes>
     </BrowserRouter>,
     document.getElementById('root')

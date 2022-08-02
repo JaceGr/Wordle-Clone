@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WordTile from './WordTile';
+import {useParams } from 'react-router-dom';
 
 function GameGrid(props) {
     const [input, setInput] = useState('');
@@ -13,12 +14,15 @@ function GameGrid(props) {
     const [input4, setInput4] = useState('');
     const [input5, setInput5] = useState('');
     const [input6, setInput6] = useState('');
+
+    // Get path parameters if they exist for word day
+    let { day } = useParams();
     
     // Fetch word from serverside
     useEffect(() => {
         async function loadWord() {
             let response;
-            if(props.day == null) {
+            if(day == null) {
                 response = await fetch('http://localhost:1337/seed/todays-word', {
                     method: "GET",
                     headers: {
@@ -26,7 +30,7 @@ function GameGrid(props) {
                     },
                 })
             } else {
-                response = await fetch(`http://localhost:1337/seed/word/${props.day}`, {
+                response = await fetch(`http://localhost:1337/seed/word/${day}`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'
