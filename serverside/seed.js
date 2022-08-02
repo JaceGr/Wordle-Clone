@@ -14,12 +14,29 @@ router.get('/test-word', async (req, res) => {
 /**
  * Endpoint to return a json object of the current days word, date and dayNum.
  * 
- * If a word doesnt exist, return 
+ * If a word doesnt exist, error status 404
  */
 router.get('/todays-word', async (req, res) => {
     const today = new Date().toLocaleDateString();
     const word = await Answer.findOne({
         puzzleDate: today
+    });
+    if(word) {
+        res.status(200).json(word);
+    } else {
+        res.status(404).json({error: "Word not found"});
+    }
+})
+
+/**
+ * Endpoint to return a json object of the specified days word, date and dayNum.
+ * 
+ * If a word doesnt exist, error status 404
+ */
+ router.get('/word/:day', async (req, res) => {
+    
+    const word = await Answer.findOne({
+        wordleDay: req.params.day
     });
     if(word) {
         res.status(200).json(word);
