@@ -127,6 +127,20 @@ function GameGrid(props) {
         } 
     }
 
+    /**
+     * Setting a cookie with midnight expiry to store the users attempt at this word
+     */
+    const updateCookies = () => {
+        // Creating the date object for midnight.
+        var expires = new Date();
+        expires.setDate(expires.getDate() + 1);
+        expires.setHours(0,0,0,0);
+        expires.toUTCString();
+
+        document.cookie = `gameHistory=${}; expires=${expires};`;
+    }
+
+    const
     document.onkeyup = handleKey;
     // document.addEventListener('keyup', handleKey);
 
@@ -155,9 +169,7 @@ function GameGrid(props) {
             <WordTile 
                 submit={guessNum > 5} 
                 inWord={guessNum === 5 ? input : input6}
-                ansWord={ansWord} />
-            {/* Buttom here to submit */}
-            
+                ansWord={ansWord} />   
         </div>
     );
 }
