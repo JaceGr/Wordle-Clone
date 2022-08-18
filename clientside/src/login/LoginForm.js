@@ -16,7 +16,7 @@ function LoginForm(props) {
     async function registerUser(e) {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:1337/api/register', {
+        const response = await fetch('http://localhost:1337/user/register', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ function LoginForm(props) {
     async function loginUser(e) {
         e.preventDefault(); 
 
-        const response = await fetch('http://localhost:1337/api/login', {
+        const response = await fetch('http://localhost:1337/user/login', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

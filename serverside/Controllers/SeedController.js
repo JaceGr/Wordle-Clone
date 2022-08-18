@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
-const Answer = require('./models/answer.model');
+const Answer = require('../Models/answer.model');
 
 var fs = require('fs');
 var readline = require('readline');

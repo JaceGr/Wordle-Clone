@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import LoginTile from './login/LoginTile';
 import Dashboard from './Dashboard';
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import TopBar from './navbar/NavBar';
 import GameGrid from './wordle/GameGrid';
 
