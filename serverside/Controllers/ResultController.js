@@ -46,11 +46,20 @@ router.post('/', async (req, res) => {
     }
 
     // Create a new results with the given user and day and number of attempts. 
-    await Result.create({
-        userEmail: user.email,
-        wordleDay: req.body.day,
-        numAttempts: req.body.attempts,
-    })
+    try {
+        await Result.create({
+            userEmail: user.email,
+            wordleDay: req.body.day,
+            numAttempts: req.body.attempts,
+        });
+    } catch (err) {
+        console.log(`Failed to store result due to: ${err}`);
+        res.status(500).json({
+            status: "Unable to store result"
+        });
+        return;
+    }
+
 
     res.status(200).json({
         status: "Result Recorded"
