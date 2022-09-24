@@ -9,10 +9,6 @@ const bcryptjs = require('bcryptjs');
 
 /**
  * Creating a result to store a users score on a certain days puzzle.
- * 
- * Steps include verifying the JWT sent with the request,
- * checking that the user exists,
- * then creating the new record in the database.
  */
 router.post('/', async (req, res) => {
 
