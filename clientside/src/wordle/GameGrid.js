@@ -124,8 +124,51 @@ function GameGrid(props) {
     }, [day]);
     
 
-    // useEffect to notify serverside of the game being won or over, each time that the gameNum is updated check. 
-    // if gameNum == 6 then send that the game is over. 
+    /* 
+     * Notify serverside of the game being won or over.
+     * Early return, unless the game has been won or lost.
+     */
+    useEffect(() => {
+        // Do nothing if the game not won and not finished during this render.
+        if(!gameWon && guessNum !== 6) return;
+
+        // post result to server
+        async function postResult() {
+            let response;
+            try {
+                if(day != null) { 
+                    console.log('null');
+                    // get the result for the given day.
+                    response = await fetch('http://localhost:1337/results', {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        body: JSON.stringify({
+                            'day': day,
+                            'attempts': guessNum + 1,
+                        }),
+                    })
+                } else {
+                    // current day
+                    console.log('Posting on current day not yet implemented')
+                    return null;
+                }
+            } catch (err) {
+                console.log(`Unable to contact server: ${err}`);
+                return null;
+            }
+
+            // Check that the post was successful.
+            const status = await response.status;
+            if (status !== 200) {
+                console.log(`Unable to post result. Status: ${status}`)
+            }
+        }
+
+        postResult().catch(console.error);
+    }, [gameWon, day, guessNum])
 
     const isCharLetter = (input) => {
         if(input.length > 1) {
