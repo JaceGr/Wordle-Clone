@@ -19,6 +19,10 @@ function GameGrid(props) {
     const [prevPlayed, setPrevPlayed] = useState(false);
     const [prevResult, setPrevResult] = useState(0);
 
+    // Bandaid fix for delaying render til after fetching for previous result
+    const [notPlayed, setNotPlayed] = useState(false); 
+
+
     // Get path parameters if they exist for word day
     let { day } = useParams();
     
@@ -42,6 +46,7 @@ function GameGrid(props) {
             if(word !== null) {
                 console.log(`Word set to: ${word}`);
                 setAnsWord(word);
+                setNotPlayed(true);
             } else {
                 console.log("Todays word cant be fetched.");
             }
@@ -261,7 +266,7 @@ function GameGrid(props) {
 
     return (
         <div className="App-body">
-            {!prevPlayed && <div>
+            {notPlayed && <div>
                 <WordTile 
                     submit={guessNum > 0 } 
                     inWord={guessNum === 0 ? input : input1}
