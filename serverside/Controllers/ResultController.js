@@ -2,6 +2,7 @@ const express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const Result = require('../Models/results.model');
+const Answer = require('../Models/answer.model');
 const User = require('../Models/user.model');
 
 const jwt = require('jsonwebtoken');
@@ -20,12 +21,23 @@ router.post('/', async (req, res) => {
         });
         return;
     }
+    
+    // If the user is playing the current day, the day will not be sent with the word.
+    let day = req.body.day;
+    if(req.body.day == null) {
+        // Determine the dayNum. As DB is NoSQL we cannot join the a table with date and dayNum.
+        const today = new Date().toLocaleDateString();
+        const word = await Answer.findOne({
+            puzzleDate: today
+        }); 
+        day = word.wordleDay;
+    }
 
     // Create a new results with the given user and day and number of attempts. 
     try {
         await Result.create({
             userEmail: tokenDecoded.email,
-            wordleDay: req.body.day,
+            wordleDay: day,
             numAttempts: req.body.attempts,
         });
     } catch (err) {
@@ -59,10 +71,20 @@ router.get('/:day', async (req, res) => {
         return;
     }
 
+    let day = req.params.day;
+    if(req.params.day === 'current') {
+        const today = new Date().toLocaleDateString();
+        let word = await Answer.findOne({
+            puzzleDate: today
+        }, 'wordleDay'); 
+        day = word.wordleDay;
+        console.log(day);
+    }
+
     // Attempt to find a result with the details in the request.
     const score = await Result.findOne({
         userEmail: tokenDecoded.email,
-        wordleDay: req.params.day,
+        wordleDay: day,
     })
 
     // If no result exists then respond with no score recorded response.
@@ -74,7 +96,8 @@ router.get('/:day', async (req, res) => {
     }
 
     res.status(200).json({
-        result: score.numAttempts
+        result: score.numAttempts,
+        day: day,
     })
 })
 

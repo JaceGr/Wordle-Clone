@@ -95,20 +95,13 @@ function GameGrid(props) {
         async function loadResult() {
             let response;
             try {
-                if(day != null) { 
-                    console.log('null');
-                    // get the result for the given day.
-                    response = await fetch(`http://localhost:1337/results/${day}`, {
-                        method: "GET",
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        },
-                    })
-                } else {
-                    // current day
-                    return null;
-                }
+                response = await fetch(`http://localhost:1337/results/${day != null ? day : 'current'}`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                })
             } catch (err) {
                 console.log(`Unable to contact server: ${err}`);
                 return null;
@@ -141,25 +134,18 @@ function GameGrid(props) {
         async function postResult() {
             let response;
             try {
-                if(day != null) { 
-                    console.log('null');
-                    // get the result for the given day.
-                    response = await fetch('http://localhost:1337/results', {
-                        method: "POST",
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        body: JSON.stringify({
-                            'day': day,
-                            'attempts': guessNum + 1,
-                        }),
-                    })
-                } else {
-                    // current day
-                    console.log('Posting on current day not yet implemented')
-                    return null;
-                }
+                // Post the result for the given day. If day is null this is handled on serverside.
+                response = await fetch('http://localhost:1337/results', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({
+                        'day': day,
+                        'attempts': guessNum + 1,
+                    }),
+                })
             } catch (err) {
                 console.log(`Unable to contact server: ${err}`);
                 return null;
