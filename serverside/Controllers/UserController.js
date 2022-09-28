@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const bcryptjs = require('bcryptjs')
+const bcryptjs = require('bcryptjs');
 const User = require('../Models/user.model');
 
 /**
@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
             lname: req.body.lname,
             email: req.body.email
         },
-            'supersecret'
+            'supersecret' // This will be removed eventually to an environment variable
         )
         res.status(200).json({status: 'ok', name: user.fname, user: token})
     } else {

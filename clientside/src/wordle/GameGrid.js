@@ -15,45 +15,151 @@ function GameGrid(props) {
     const [input5, setInput5] = useState('');
     const [input6, setInput6] = useState('');
 
+    // Previous result state
+    const [prevPlayed, setPrevPlayed] = useState(false);
+    const [prevResult, setPrevResult] = useState(0);
+
+    // Bandaid fix for delaying render til after fetching for previous result
+    const [notPlayed, setNotPlayed] = useState(false); 
+
+
     // Get path parameters if they exist for word day
     let { day } = useParams();
     
     // Fetch word from serverside
     useEffect(() => {
+        /**
+         * Initialise the state of the GameGrid.
+         * Check for a previous attempt at this day. Show result if attempted already.
+         * If not attempted, fetch the word for the given day and present the game board.
+         * @returns No data is returned. Return is only used to stop execution early.
+         */
+        async function initialise() {
+            const result = await loadResult().catch(console.error);
+            if(result != null && result > 0) {
+                setPrevResult(result);
+                setPrevPlayed(true);
+                return;
+            }
+
+            let word = await loadWord().catch(console.error);
+            if(word !== null) {
+                console.log(`Word set to: ${word}`);
+                setAnsWord(word);
+                setNotPlayed(true);
+            } else {
+                console.log("Todays word cant be fetched.");
+            }
+        }
+
+        /**
+         * Fetch the word for the given day or todays word if no day. 
+         * @returns The word for the given day, null otherwise.
+         */
         async function loadWord() {
             let response;
-            if(day == null) {
-                response = await fetch('http://localhost:1337/seed/todays-word', {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                })
-            } else {
-                response = await fetch(`http://localhost:1337/seed/word/${day}`, {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                })
+            try {
+                if(day == null) {
+                    response = await fetch('http://localhost:1337/seed/todays-word', {
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                } else {
+                    response = await fetch(`http://localhost:1337/seed/word/${day}`, {
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                }
+            } catch (err) {
+                console.log(`Unable to contact server: ${err}`);
+                return null;
             }
+
             const status = await response.status;
             if (status === 200) {
                 const data = await response.json();
-                setAnsWord(data.answer);
+                return data.answer;
             } else {
-                // TODO: Set the page to a "Cant play page instead of a hard coded word."
-                console.log("Todays word cant be fetched. Setting to another hardcoded word");
-                setAnsWord("TRUCK")
+                return null;
             }
         }
-        
-        loadWord().catch(console.error);
-    }, []);
+
+        /**
+         * Determine if this days puzzle has been previously attempted. 
+         * @returns The number of guesses in a previous attempt. Null if no previous attempts.
+         */
+        async function loadResult() {
+            let response;
+            try {
+                response = await fetch(`http://localhost:1337/results/${day != null ? day : 'current'}`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                })
+            } catch (err) {
+                console.log(`Unable to contact server: ${err}`);
+                return null;
+            }
+
+            const status = await response.status;
+            if (status === 200) {
+                const data = await response.json();
+                return data.result;
+            } else {
+                return null;
+            }
+        }
+
+        // Call initialise to initialise the wordle grid or show previous attempt.
+        initialise().catch(console.error);
+
+    }, [day]);
     
 
-    // useEffect to notify serverside of the game being won or over, each time that the gameNum is updated check. 
-    // if gameNum == 6 then send that the game is over. 
+    /* 
+     * Notify serverside of the game being won or over.
+     * Early return, unless the game has been won or lost.
+     */
+    useEffect(() => {
+        // Do nothing if the game not won and not finished during this render.
+        if(!gameWon && guessNum !== 6) return;
+
+        // post result to server
+        async function postResult() {
+            let response;
+            try {
+                // Post the result for the given day. If day is null this is handled on serverside.
+                response = await fetch('http://localhost:1337/results', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({
+                        'day': day,
+                        'attempts': guessNum + 1,
+                    }),
+                })
+            } catch (err) {
+                console.log(`Unable to contact server: ${err}`);
+                return null;
+            }
+
+            // Check that the post was successful.
+            const status = await response.status;
+            if (status !== 200) {
+                console.log(`Unable to post result. Status: ${status}`)
+            }
+        }
+
+        postResult().catch(console.error);
+    }, [gameWon, day, guessNum])
 
     const isCharLetter = (input) => {
         if(input.length > 1) {
@@ -127,37 +233,55 @@ function GameGrid(props) {
         } 
     }
 
+    /**
+     * Create the string to show to a user when they have completed this level.  
+     * @returns Congratulation message if finished successfully or better luck next time if not.
+     */
+    const getPrevResultMessage = () => {
+        if(prevResult === 0 ) {
+            return null;
+        } else if(prevResult < 7) {
+            return `You have already played this day! You finished it in ${prevResult} attempts`;
+        } else {
+            return 'You were unable to successfully complete this level. Better luck next time!'
+        }
+    }
+
     document.onkeyup = handleKey;
     // document.addEventListener('keyup', handleKey);
 
     return (
         <div className="App-body">
-            <WordTile 
-                submit={guessNum > 0 } 
-                inWord={guessNum === 0 ? input : input1}
-                ansWord={ansWord} />
-            <WordTile 
-                submit={guessNum > 1} 
-                inWord={guessNum === 1 ? input : input2}
-                ansWord={ansWord} />
-            <WordTile 
-                submit={guessNum > 2} 
-                inWord={guessNum === 2 ? input : input3}
-                ansWord={ansWord} />
-            <WordTile 
-                submit={guessNum > 3} 
-                inWord={guessNum === 3 ? input : input4}
-                ansWord={ansWord} />
-            <WordTile 
-                submit={guessNum > 4} 
-                inWord={guessNum === 4 ? input : input5}
-                ansWord={ansWord} />
-            <WordTile 
-                submit={guessNum > 5} 
-                inWord={guessNum === 5 ? input : input6}
-                ansWord={ansWord} />
-            {/* Buttom here to submit */}
-            
+            {notPlayed && <div>
+                <WordTile 
+                    submit={guessNum > 0 } 
+                    inWord={guessNum === 0 ? input : input1}
+                    ansWord={ansWord} />
+                <WordTile 
+                    submit={guessNum > 1} 
+                    inWord={guessNum === 1 ? input : input2}
+                    ansWord={ansWord} />
+                <WordTile 
+                    submit={guessNum > 2} 
+                    inWord={guessNum === 2 ? input : input3}
+                    ansWord={ansWord} />
+                <WordTile 
+                    submit={guessNum > 3} 
+                    inWord={guessNum === 3 ? input : input4}
+                    ansWord={ansWord} />
+                <WordTile 
+                    submit={guessNum > 4} 
+                    inWord={guessNum === 4 ? input : input5}
+                    ansWord={ansWord} />
+                <WordTile 
+                    submit={guessNum > 5} 
+                    inWord={guessNum === 5 ? input : input6}
+                    ansWord={ansWord} />
+                {/* Buttom here to submit */}
+            </div>}
+            {prevPlayed && <div>
+                {getPrevResultMessage()}
+            </div>}
         </div>
     );
 }
