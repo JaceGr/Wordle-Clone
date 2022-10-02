@@ -60,6 +60,42 @@ router.post('/', async (req, res) => {
  * If the user has attempted the provided days puzzle, the number of attempts will be returned. 
  * Else, 0 will be returned for NoScore.
  */
+ router.get('/dashboard', async (req, res) => {
+
+    // Determine the logged in user that has sent this request.
+    const tokenDecoded = findUser(req);
+    if(tokenDecoded === null) {
+        res.status(401).json({
+            message: "User authentication error. Please sign in again."
+        });
+        return;
+    }
+
+    // Attempt to find a result with the details in the request.
+    const results = await Result.find({
+        userEmail: tokenDecoded.email,
+    })
+
+    // If no result exists then respond with no score recorded response.
+    if(results == null) {
+        res.status(200).json({
+            average: 0,
+        });
+        return;
+    }
+
+    const average = getDashboardResults(results)
+    console.log(average)
+
+    res.status(200).json(average)
+})
+
+/**
+ * Requesting to determine if a user has attempted a particular days puzzle. 
+ * 
+ * If the user has attempted the provided days puzzle, the number of attempts will be returned. 
+ * Else, 0 will be returned for NoScore.
+ */
 router.get('/:day', async (req, res) => {
 
     // Determine the logged in user that has sent this request.
@@ -78,7 +114,6 @@ router.get('/:day', async (req, res) => {
             puzzleDate: today
         }, 'wordleDay'); 
         day = word.wordleDay;
-        console.log(day);
     }
 
     // Attempt to find a result with the details in the request.
@@ -139,4 +174,38 @@ const findUser = (req) => {
     // Decode Token once it has been verified and return from function.
     return jwt.decode(token); 
 }
+
+/**
+ * Calculate the resuls to be shown on the dashboard. 
+ * @param numAttempts Array of Result schema objects 
+ * @returns {average, wins, games}
+ */
+const getDashboardResults = (results) => {
+    
+    // Create an array with each element being the number of attempts for a puzzle.
+    const numAttempts = results.map(item => {
+        return item.numAttempts;
+    })
+    
+    // Number of wins
+    const totNumWins = numAttempts.reduce((partialCount, a) => {
+        if(a<7) {
+            return partialCount + 1
+        } else {
+            return partialCount
+        }
+    }, 0)
+
+    // Total attempts for wins and losses
+    const totNumAttempts = numAttempts.reduce((partialSum, a) => partialSum + a, 0);
+
+    
+    // Attempts to win ratios
+    return {
+        average: totNumAttempts / totNumWins,
+        wins: totNumWins,
+        games: numAttempts.length,
+    };
+}
+
 module.exports = router;
