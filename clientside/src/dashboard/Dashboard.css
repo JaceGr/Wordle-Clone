@@ -1,0 +1,38 @@
+.card-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.result-tile {
+    background-color: #FF8E00;
+    width: 240px;
+    height: 360px;
+    box-shadow: 4px;
+    border-radius: 8px;
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+.result-label {
+    margin-left: 4px;
+    margin-top: 4px;
+    color: #003366;
+}
+
+.result-score {
+    text-align: center;
+    font-size: 72px;
+}
+
+.result-explanation {
+    margin:4px
+}
+
+/* Colour Pallete: 
+ * Navy: #002347
+ * Royal Navy: #003366
+ * Royal Blue: #003F7D
+ * Orange 1: #FF8E00
+ * Orange 2: #FD7702
+ * Orange 3: #FF5003
+ */

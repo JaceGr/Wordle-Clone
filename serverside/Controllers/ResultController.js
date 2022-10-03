@@ -6,7 +6,6 @@ const Answer = require('../Models/answer.model');
 const User = require('../Models/user.model');
 
 const jwt = require('jsonwebtoken');
-const bcryptjs = require('bcryptjs');
 
 /**
  * Creating a result to store a users score on a certain days puzzle.

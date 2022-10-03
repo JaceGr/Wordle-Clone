@@ -16,7 +16,7 @@ function TopBar() {
   const navigate = useNavigate();
   return (
       <div className="bar">
-        <div onClick={() => {navigate("/")}} className="option">Home</div>
+        <div onClick={() => {navigate("/")}} className="option option-left">Home</div>
         <div onClick={() => {navigate("/wordle")}} className="option">Wordle</div>
         <div onClick={() => {navigate("/login")}} className="option">Login</div>
         <div onClick={logout} className="option">Logout</div>
